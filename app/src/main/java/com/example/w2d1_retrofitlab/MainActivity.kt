@@ -15,9 +15,7 @@ class MainViewModel : ViewModel() {
     fun queryName(name:String) {
         Log.d("hitCountCheck","queryName")
         query.value = name }
-    /*val queryName = query.switchMap {
-        liveData(Dispatchers.IO) { emit(repository.hitCountCheck("Trump")) }
-    }*/
+
     val hitCount = query.switchMap {
         Log.d("hitCountCheck","chekcing")
         liveData(Dispatchers.IO) { emit(repository.hitCountCheck(it)) }
@@ -38,8 +36,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.query.observe(this, changeObserver)
 
         button.setOnClickListener {
             viewModel.queryName("Trump")
@@ -48,6 +44,14 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.query.observe(this, changeObserver)
+        viewModel.hitCount.observe(
+            this,{
+                val hitCountString = it.query.searchinfo.totalhits.toString()
+                textView.text = "hits${hitCountString}"
+            }
+        )
 
     }
 }
